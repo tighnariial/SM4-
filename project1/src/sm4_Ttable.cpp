@@ -4,7 +4,8 @@
 #include <cstdint>
 #include <cstring>
 
-
+extern const uint8_t SBOX[256];
+uint32_t L(uint32_t x);
 //生成预计算T-table
 void generate_SM4_Ttable(uint32_t T0[256], uint32_t T1[256], uint32_t T2[256], uint32_t T3[256]) {
     for (int i = 0; i < 256; i++) {
