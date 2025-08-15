@@ -2,7 +2,7 @@ import os
 import cv2
 import numpy as np
 from watermark_embedding&extraction import embed_watermark, extract_watermark
-
+//对图像进行压缩，噪声，裁剪，旋转，高斯模糊等攻击，测试鲁棒性
 def attack_jpeg(img, quality=50):
     cv2.imwrite('temp.jpg', img, [int(cv2.IMWRITE_JPEG_QUALITY), quality])
     return cv2.imread('temp.jpg')
