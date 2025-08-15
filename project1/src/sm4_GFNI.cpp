@@ -19,13 +19,13 @@ static inline __m128i gf_inv_aesfield(__m128i x) {
 
 //sm4域中元素与aes域中元素的仿射变换
 static inline __m128i gf_affine_sm4_2_aes(){
-    const unsigned long long M = 0x0000000000000000ULL;
-    const int                B = 0x00;
+    const unsigned long long M = 0x0673E556A2490912;
+    const int                B = 0x01;
     return _mm_gf2p8affine_epi64_epi8(x, M_A1, B_A1);
 }
 static inline __m128i gf_affine_aes_2_sm4(){
-    const unsigned long long M = 0x0000000000000000ULL;
-    const int                B = 0x00;
+    const unsigned long long M = 0x75E9E8356997606E;
+    const int                B = 0x75;
     return _mm_gf2p8affine_epi64_epi8(x, M_A1, B_A1);
   
 }
