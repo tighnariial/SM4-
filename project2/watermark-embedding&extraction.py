@@ -41,16 +41,16 @@ def midband_mask():
 //使用spread_specrtum法嵌入水印
 def embed_spread_spectrum(img_bgr, wm_bits, key=1234, alpha=2.0):
     ycrcb = rgb_to_ycbcr(img_bgr)
-    Y = ycrcb[:,:,0].astype(np.float32)
+    Y = ycrcb[:,:,0].astype(np.float32)//转换ycbcr表示
     blocks, shape = split_blocks(Y)
     mask = midband_mask()
     idx = np.where(mask.flatten())[0]
-    m = len(idx)
+    m = len(idx)//掩码为1的通道数
 
-    rng = default_rng(key)
+    rng = default_rng(key)//根据输入密钥生成随机pn序列
     pn = rng.choice([-1.0, 1.0], size=m).astype(np.float32)
 
-    wm = np.array(wm_bits, dtype=np.uint8)
+    wm = np.array(wm_bits, dtype=np.uint8)//调整水印bit数，使其对应图片的每一个block
     if len(wm) < len(blocks):
         reps = (len(blocks) + len(wm)-1)//len(wm)
         wm = np.tile(wm, reps)[:len(blocks)]
@@ -58,14 +58,14 @@ def embed_spread_spectrum(img_bgr, wm_bits, key=1234, alpha=2.0):
         wm = wm[:len(blocks)]
 
     out_blocks = []
-    for b, bit in zip(blocks, wm):
+    for b, bit in zip(blocks, wm)://对原图的每一block做DCT
         B = dct2(b).flatten()
-        B[idx] += alpha * pn * (1 if bit else -1)
+        B[idx] += alpha * pn * (1 if bit else -1)//对于中频序列的每一bit，根据pn以及水印对应位的bit，调整其取值
         out_blocks.append(idct2(B.reshape(8,8)))
 
     out_blocks = np.stack(out_blocks)
     Yw = np.clip(merge_blocks(out_blocks, shape), 0, 255).astype(np.uint8)
-    ycrcb[:,:,0] = Yw
+    ycrcb[:,:,0] = Yw//得到嵌入水印后的RGB格式图像
     return ycbcr_to_rgb(ycrcb)
     
 //提取水印
@@ -88,6 +88,8 @@ def extract_spread_spectrum(img_bgr_w, n_bits, key=1234, alpha=2.0):
         bits.append(1 if corr > 0 else 0)
 
     return np.array(bits, dtype=np.uint8)
+
+
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
 
